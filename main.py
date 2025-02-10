@@ -2,12 +2,12 @@ import streamlit as st
 import os
 import yt_dlp
 
-def download_video(video_url, download_path='downloads'):
+def download_video(url, download_path='downloads'):
     """
     Download a video from a given URL using yt-dlp.
 
     Args:
-        video_url (str): The URL of the video to download.
+        url (str): The URL of the video to download.
         download_path (str): The directory where the video will be saved. Default is 'downloads'.
     """
     # Set up options for yt-dlp
@@ -20,17 +20,10 @@ def download_video(video_url, download_path='downloads'):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         result = ydl.extract_info(video_url, download=False)
         video_filename = ydl.prepare_filename(result)
-        ydl.download([video_url])
+        ydl.download([url])
 
     return video_filename
 
-
-option = st.selectbox(
-    "Select platform?",
-    ("Youtube", "Facebook"),
-)
-
-st.write("Downloading from:", option)
 
 video_url = st.text_input("Video Url", "")
 st.write("Current video to download", video_url)
@@ -50,6 +43,9 @@ if st.button("Process Video"):
                         file_name=os.path.basename(video_path),
                         mime="video/mp4"
                     )
+
+                os.remove(video_path)
+                st.info("The video file has been deleted after download.")
 
             except Exception as e:
                 st.error(f"An error occurred: {e}")
